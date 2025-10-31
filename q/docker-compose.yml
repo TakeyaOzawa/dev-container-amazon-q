@@ -6,7 +6,9 @@ services:
     volumes:
       - ${AMAZON_Q_WORKSPACE:-${AMAZON_Q_DEFAULT_WORKSPACE:-$HOME}}:/home/developer/workspace:cached
       - ~/.aws/nskp_config/netskope-cert-bundle.pem:/home/developer/.aws/nskp_config/netskope-cert-bundle.pem:cached
-      - ./.amazonq:/home/developer/workspace/.amazonq:cached
+      - ./.amazonq/agents/default.json:/home/developer/workspace/.amazonq/agents/default.json:cached
+      - ./.amazonq/rules/development-standards.md:/home/developer/workspace/.amazonq/rules/development-standards.md:cached
+      - ./.amazonq/slack-notification.sh:/home/developer/workspace/.amazonq/slack-notification.sh:cached
       - ./.vscode:/vscode:cached
     env_file:
       - ./.env
