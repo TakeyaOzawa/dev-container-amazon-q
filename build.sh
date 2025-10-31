@@ -9,15 +9,16 @@ if [ ! -f "./q/.env" ]; then
     echo "Warning: .env file not found. Creating from .env.example..."
     if [ -f "./q/.env.example" ]; then
         cp ./q/.env.example ./q/.env
+        echo "Please edit ./q/.env file with your settings before continuing."
+        echo "Required settings:"
+        echo "  - AMAZON_Q_START_URL"
+        echo "  - AMAZON_Q_WORKSPACE"
+        exit 1
     else
         echo "Error: .env.example not found. Please create .env file manually."
         exit 1
     fi
 fi
-
-# TARGET_WORKSPACE=${1:-${AMAZON_Q_WORKSPACE:-${AMAZON_Q_DEFAULT_WORKSPACE}}}
-# WORK_HASH=$(echo "${TARGET_WORKSPACE}_$(date)" | md5sum | cut -c1-4)
-# export AMAZON_Q_WORKSPACE="$TARGET_WORKSPACE"
 
 # Docker Composeでビルド
 cd q

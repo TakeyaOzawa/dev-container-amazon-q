@@ -21,11 +21,21 @@ dev-container-amazon-q/
 ├── docs/                         # ドキュメント
 │   ├── setup-guide.md            # 詳細セットアップガイド
 │   ├── troubleshooting.md        # トラブルシューティング
-│   └── faq.md                    # よくある質問
+│   ├── faq.md                    # よくある質問
+│   ├── 100010_external-specifications.md # 外部仕様書
+│   ├── 100020_implementation-strategy.md # 実装戦略
+│   ├── 100030_internal-specifications.md # 内部仕様書
+│   └── 100040_task-list.md       # タスクリスト
 ├── q/                            # Amazon Q環境
-│   ├── amazonq/                  # Amazon Q設定保存
-│   │   └── agents/
-│   │       └── default-agent.json
+│   ├── .amazonq/                 # Amazon Q設定・データ保存
+│   │   ├── agents/               # エージェント設定
+│   │   │   └── default.json      # デフォルトエージェント設定
+│   │   ├── rules/                # 開発ルール・標準
+│   │   │   └── development-standards.md
+│   │   └── slack-notification.sh # Slack通知スクリプト
+│   ├── .vscode/                  # VSCode設定
+│   │   ├── settings.json         # エディタ設定
+│   │   └── launch.json           # デバッグ設定
 │   ├── scripts/                  # セットアップスクリプト
 │   │   ├── auth-amazon-q.sh      # 認証スクリプト
 │   │   ├── build-complete.sh     # 完了メッセージ表示
@@ -61,10 +71,33 @@ AMAZON_Q_START_URL=https://your-company.awsapps.com/start
 # Workspace path (必須)
 AMAZON_Q_WORKSPACE=/Users/<UserName>/<Workspace>
 
+# Slack設定 (オプション)
+AMAZON_Q_SLACK_OAUTH_TOKEN="xoxb-XXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX"
+AMAZON_Q_SLACK_USER_ID="UXXXXXXXXXX"
+
+# Notion MCP設定 (オプション)
+AMAZON_Q_NOTION_TOKEN="secret_XXXXXXXXXXXXXXXXXXXXXX"
+
 # Proxy settings (オプション)
 HTTP_PROXY=http://proxy.company.com:8080
 HTTPS_PROXY=http://proxy.company.com:8080
 ```
+
+#### Slack通知設定（オプション）
+
+タスク完了時にSlackに通知を送信する場合：
+
+1. Slack Botを作成し、OAuth Tokenを取得
+2. 通知を受け取るユーザーのUser IDを取得
+3. `.env`ファイルに設定を追加
+
+#### Notion MCP設定（オプション）
+
+NotionとのMCP（Model Context Protocol）連携を有効にする場合：
+
+1. Notion APIトークンを取得
+2. `.env`ファイルに`AMAZON_Q_NOTION_TOKEN`を設定
+3. `q/.amazonq/agents/default.json`でMCPサーバー設定を確認
 
 ### 2. Docker Compose起動
 
@@ -98,6 +131,60 @@ HTTPS_PROXY=http://proxy.company.com:8080
 ```
 
 ## 設定ファイル詳細
+
+### MCP（Model Context Protocol）設定
+
+`q/.amazonq/agents/default.json`でMCPサーバーの設定を管理：
+
+```json
+{
+  "mcpServers": {
+    "notion2": {
+      "type": "stdio",
+      "command": "notion-mcp-server",
+      "args": [],
+      "env": {
+        "NOTION_TOKEN": "${AMAZON_Q_NOTION_TOKEN}"
+      },
+      "autoAllowReadonly": false,
+      "autoAllowWrite": true
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest"
+      ]
+    }
+  }
+}
+```
+
+### エージェント設定
+
+`q/.amazonq/agents/default.json`でデフォルトエージェントの動作を設定：
+
+```json
+{
+  "name": "development-assistant",
+  "description": "開発作業用の自動承認エージェント",
+  "allowedTools": ["fs_read", "fs_write", "execute_bash"],
+  "toolsSettings": {
+    "fs_read": {
+      "allowedPaths": ["*"],
+      "deniedPaths": ["~/.ssh/**", "/etc/**"]
+    },
+    "fs_write": {
+      "allowedPaths": ["~/workspace/**"],
+      "deniedPaths": ["~/workspace/production/**"]
+    },
+    "execute_bash": {
+      "allowedCommands": ["*"],
+      "deniedCommands": ["git push .*", "rm -rf .*"],
+      "autoAllowReadonly": true
+    }
+  }
+}
+```
 
 ### devcontainer.json
 

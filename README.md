@@ -13,11 +13,23 @@ dev-container-amazon-q/
 ├── docs/                      # ドキュメント
 │   ├── setup-guide.md         # 詳細セットアップガイド
 │   ├── troubleshooting.md     # トラブルシューティング
-│   └── faq.md                 # よくある質問
+│   ├── faq.md                 # よくある質問
+│   ├── mcp-configuration.md   # MCP設定ガイド
+│   ├── amazon-q-cli-investigation.md # Amazon Q CLI調査結果
+│   ├── 100010_external-specifications.md # 外部仕様書
+│   ├── 100020_implementation-strategy.md # 実装戦略
+│   ├── 100030_internal-specifications.md # 内部仕様書
+│   └── 100040_task-list.md    # タスクリスト
 ├── q/                         # Amazon Q環境
-│   ├── amazonq/               # Amazon Q設定保存
-│   │   └── agents/
-│   │       └── default-agent.json
+│   ├── .amazonq/              # Amazon Q設定・データ保存
+│   │   ├── agents/            # エージェント設定
+│   │   │   └── default.json   # デフォルトエージェント設定
+│   │   ├── rules/             # 開発ルール・標準
+│   │   │   └── development-standards.md
+│   │   └── slack-notification.sh # Slack通知スクリプト
+│   ├── .vscode/               # VSCode設定
+│   │   ├── settings.json      # エディタ設定
+│   │   └── launch.json        # デバッグ設定
 │   ├── scripts/               # セットアップスクリプト
 │   │   ├── auth-amazon-q.sh   # 認証スクリプト
 │   │   ├── build-complete.sh  # 完了メッセージ表示
@@ -58,6 +70,13 @@ AMAZON_Q_START_URL=https://your-company.awsapps.com/start
 
 # Workspace path (必須)
 AMAZON_Q_WORKSPACE=/Users/<UserName>/<Workspace>
+
+# Slack設定 (オプション)
+AMAZON_Q_SLACK_OAUTH_TOKEN="xoxb-XXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX"
+AMAZON_Q_SLACK_USER_ID="UXXXXXXXXXX"
+
+# Notion MCP設定 (オプション)
+AMAZON_Q_NOTION_TOKEN="secret_XXXXXXXXXXXXXXXXXXXXXX"
 
 # Proxy settings (オプション)
 HTTP_PROXY=http://proxy.company.com:8080
@@ -151,11 +170,16 @@ aws s3 ls
 - **コンテナ自動検索**: 複数プロジェクト環境で最新のコンテナを自動選択
 - **エージェント設定**: カスタムエージェント設定の永続化
 - **ヘルスチェック**: コンテナ準備完了時の自動通知とナビゲーション表示
+- **MCP統合**: Model Context Protocol対応（Notion、Chrome DevToolsなど）
+- **Slack通知**: タスク完了時の自動Slack通知機能
 
 ### 環境変数サポート
 - `q/.env`ファイルによる環境変数の自動読み込み
 - `AMAZON_Q_START_URL`: SSO認証URL（必須）
 - `AMAZON_Q_WORKSPACE`: ワークスペースパス（必須）
+- `AMAZON_Q_SLACK_OAUTH_TOKEN`: Slack Bot Token（オプション）
+- `AMAZON_Q_SLACK_USER_ID`: Slack User ID（オプション）
+- `AMAZON_Q_NOTION_TOKEN`: Notion API Token（オプション）
 - `AWS_CA_BUNDLE`: 証明書パス（自動設定）
 - `HTTP_PROXY`/`HTTPS_PROXY`: プロキシ設定（オプション）
 

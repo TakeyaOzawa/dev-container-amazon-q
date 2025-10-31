@@ -57,8 +57,8 @@ if [ -n "$TARGET_CONTAINER" ]; then
     fi
 else
     # 全Amazon Qコンテナを対象
-    CONTAINERS=$(docker ps --format "{{.Names}}" | grep -E "q-.*amazon-q" || true)
-    ALL_CONTAINERS=$(docker ps -a --format "{{.Names}}" | grep -E "q-.*amazon-q" || true)
+    CONTAINERS=$(docker ps --format "{{.Names}}" | grep -E "q-.*amazon-q-1$" || true)
+    ALL_CONTAINERS=$(docker ps -a --format "{{.Names}}" | grep -E "q-.*amazon-q-1$" || true)
     IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep -E "q-.*amazon-q" || true)
 fi
 

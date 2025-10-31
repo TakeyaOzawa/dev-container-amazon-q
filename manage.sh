@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # 環境変数の読み込み
-if [ -f ".env" ]; then
-    source .env
+if [ -f "q/.env" ]; then
+    source q/.env
 fi
 
 # 実際に動いているAmazon Qコンテナを検索（最新のものを選択）
@@ -83,7 +83,7 @@ case "$1" in
             exit 1
         fi
         ;;
-    auth-status)
+    status)
         echo "📊 Checking Amazon Q authentication status..."
         if [ -n "$CONTAINER_NAME" ]; then
             docker exec -it ${2:-$CONTAINER_NAME} /usr/local/scripts/check-auth.sh
@@ -105,15 +105,9 @@ case "$1" in
         ./cleanup.sh clean
         ./build.sh
         ;;
-    clean)
-        echo "🧹 Cleaning up..."
-        docker compose down --volumes --remove-orphans
-        docker compose down --rmi all --volumes --remove-orphans 2>/dev/null || true
-        echo "Cleanup complete"
-        ;;
     config)
         echo "⚙️  Showing Docker Compose configuration..."
-        docker compose config
+        cd q && docker compose config
         ;;
     *)
         echo "Amazon Q CLI Container Manager (Docker Compose)"

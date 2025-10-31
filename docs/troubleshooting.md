@@ -48,6 +48,53 @@ docker system prune -a
 
 ### Amazon Q CLI関連
 
+#### 4. MCP接続エラー
+
+**症状**: Notion MCPサーバーに接続できない
+
+**対処法**:
+```bash
+# Notion APIトークンの確認
+echo $AMAZON_Q_NOTION_TOKEN
+
+# MCP設定の確認
+cat q/.amazonq/agents/default.json
+
+# MCPサーバーの手動テスト
+npx notion-mcp-server
+```
+
+#### 5. Slack通知が送信されない
+
+**症状**: タスク完了時にSlack通知が届かない
+
+**対処法**:
+```bash
+# 環境変数の確認
+echo $AMAZON_Q_SLACK_OAUTH_TOKEN
+echo $AMAZON_Q_SLACK_USER_ID
+
+# 通知スクリプトの手動実行
+~/workspace/.amazonq/slack-notification.sh "テストタスク" "完了"
+
+# Slack Bot権限の確認
+# - chat:write
+# - users:read
+```
+
+#### 6. エージェント設定が反映されない
+
+**症状**: カスタムエージェント設定が適用されない
+
+**対処法**:
+```bash
+# エージェント設定の確認
+cat q/.amazonq/agents/default.json
+
+# 設定ファイルの再読み込み
+q chat --agent development-assistant
+```
+
 #### 1. 認証エラー
 
 **症状**: `q chat`で認証エラー

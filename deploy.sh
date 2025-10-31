@@ -18,19 +18,25 @@ if [ ! -f "./q/.env" ]; then
 fi
 
 # 環境変数の確認
+source ./q/.env 2>/dev/null || true
+
 if [ -z "$AMAZON_Q_WORKSPACE" ]; then
-    source ./q/.env
-    if [ -z "$AMAZON_Q_WORKSPACE" ]; then
-        echo "Error: AMAZON_Q_WORKSPACE not set in .env file"
-        exit 1
-    fi
+    echo "Error: AMAZON_Q_WORKSPACE not set in .env file"
+    exit 1
+fi
+
+# ワークスペースパスの存在確認
+if [ ! -d "$AMAZON_Q_WORKSPACE" ]; then
+    echo "Error: Workspace directory does not exist: $AMAZON_Q_WORKSPACE"
+    echo "Please create the directory or update AMAZON_Q_WORKSPACE in .env file"
+    exit 1
 fi
 
 echo "Workspace path: $AMAZON_Q_WORKSPACE"
 
-TARGET_WORKSPACE=${1:-${AMAZON_Q_WORKSPACE:-${AMAZON_Q_DEFAULT_WORKSPACE}}}
-PROJECT_NAME=$(echo ${2:-$TARGET_WORKSPACE} | sed 's|/*$||; s|.*/\([^/]*\)/\([^/]*\)$|\2-\1|')
-WORK_HASH=$(echo "${TARGET_WORKSPACE}_$(date)" | md5sum | cut -c1-4)
+TARGET_WORKSPACE=${1:-${AMAZON_Q_WORKSPACE}}
+PROJECT_NAME=$(basename "$TARGET_WORKSPACE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+WORK_HASH=$(echo "${TARGET_WORKSPACE}_$(date +%Y%m%d)" | md5sum | cut -c1-4)
 
 export AMAZON_Q_WORKSPACE="$TARGET_WORKSPACE"
 export COMPOSE_PROJECT_NAME="q-${PROJECT_NAME}-${WORK_HASH}"

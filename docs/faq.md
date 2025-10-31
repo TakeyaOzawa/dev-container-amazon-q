@@ -39,8 +39,16 @@ AMAZON_Q_START_URL=https://your-company.awsapps.com/start
 
 オプション項目:
 ```bash
+# プロキシ設定
 HTTP_PROXY=http://proxy.company.com:8080
 HTTPS_PROXY=http://proxy.company.com:8080
+
+# Slack通知設定
+AMAZON_Q_SLACK_OAUTH_TOKEN="xoxb-XXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXX"
+AMAZON_Q_SLACK_USER_ID="UXXXXXXXXXX"
+
+# Notion MCP設定
+AMAZON_Q_NOTION_TOKEN="secret_XXXXXXXXXXXXXXXXXXXXXX"
 ```
 
 ### Q6: プロキシ環境での設定方法は？
@@ -49,6 +57,32 @@ A: `q/.env`ファイルにプロキシ設定を追加:
 ```bash
 HTTP_PROXY=http://proxy.company.com:8080
 HTTPS_PROXY=http://proxy.company.com:8080
+```
+
+### Q7: MCP（Model Context Protocol）とは何ですか？
+
+A: MCPは、アプリケーションがLLMにコンテキストを提供するための標準プロトコルです。NotionやChrome DevToolsなどの外部サービスとAmazon Qを連携できます。
+
+### Q8: Slack通知機能の設定方法は？
+
+A: 
+1. Slack Botを作成してOAuth Tokenを取得
+2. 通知を受け取るユーザーのUser IDを取得
+3. `.env`ファイルに以下を設定:
+```bash
+AMAZON_Q_SLACK_OAUTH_TOKEN="xoxb-your-token"
+AMAZON_Q_SLACK_USER_ID="U1234567890"
+```
+
+### Q9: Notion連携の設定方法は？
+
+A:
+1. Notion APIトークンを取得
+2. `.env`ファイルに設定:
+```bash
+AMAZON_Q_NOTION_TOKEN="secret_your-token"
+```
+3. `q/.amazonq/agents/default.json`でMCPサーバー設定を確認
 ```
 
 ## 使用方法
