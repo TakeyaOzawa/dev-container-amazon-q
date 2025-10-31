@@ -194,7 +194,7 @@ Chrome拡張機能のメッセージングは、インフラストラクチャ�
 
 ### 通知を送るべき状況
 
-以下のいずれかの状況では、**必ず`slack-notification.sh`を実行してからユーザーに問い合わせを行う**こと：
+以下のいずれかの状況では、**必ず`./.amazonq/slack-notification.sh`を実行してからユーザーに問い合わせを行う**こと：
 
 1. **AskUserQuestionツールを使用する前**
    - 実装方法の選択肢を提示する場合
@@ -219,7 +219,7 @@ Chrome拡張機能のメッセージングは、インフラストラクチャ�
 ### 通知スクリプトの実行方法
 
 ```bash
-bash slack-notification.sh "[$$]実施中のタスク要約" "状況詳細"
+bash ./.amazonq/slack-notification.sh "[$$]実施中のタスク要約" "状況詳細"
 ```
 
 **引数の説明:**
@@ -247,7 +247,7 @@ Slackブロック形式で以下の構造で送信されます：
 ```typescript
 // 例1: ユーザーに選択肢を提示する前
 // 1. まずSlack通知を送信
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$]認証機能の実装" \
   "認証方式の選択が必要です。Claudeからの質問を確認してください。"
 
@@ -262,7 +262,7 @@ AskUserQuestion: {
 
 // 例2: 作業完了後の報告前
 // 1. Slack通知を送信
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$]変数名のリネーム作業" \
   "リネーム作業が完了しました。次のタスクの指示をお願いします。"
 
@@ -270,23 +270,23 @@ Bash: bash slack-notification.sh \
 Output: "リネーム作業が完了しました。次のタスクについてご指示ください。"
 
 // 例3: 長時間コマンドの完了通知
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$]プロジェクトのビルド" \
   "ビルドが完了しました。3件のwarningがあります。結果を確認してください。"
 
 // 例4: エラー発生時
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$]テストの実行" \
   "5件のテストが失敗しています。エラーログの確認とユーザーの判断が必要です。"
 
 // 例5: ユーザーによるリクエスト中断時
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$][Request interrupted by user] データベーススキーマの変更" \
   "作業が中断されました。再開するには指示をお願いします。"
 
 // 例6: ファイルアクセス・コマンド実行の許可を求める前
 // 1. Slack通知を送信
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$]システムファイルの編集" \
   "/etc/hostsファイルへの書き込み許可が必要です。Claudeからの承認リクエストを確認してください。"
 
@@ -294,7 +294,7 @@ Bash: bash slack-notification.sh \
 // ユーザーが許可を与えるまで待機
 
 // 例7: 複数行のメッセージ（改行を含む）
-Bash: bash slack-notification.sh \
+Bash: bash ./.amazonq/slack-notification.sh \
   "[$$]依存パッケージの更新" \
   "以下のパッケージの更新確認が必要です:
 - react: 18.2.0 → 18.3.0
@@ -367,10 +367,10 @@ export AMAZON_Q_SLACK_USER_ID='U1234567890'
 **使用例（環境変数設定済み）:**
 ```bash
 # シンプルな通知（第2引数省略）
-bash slack-notification.sh "[$$]テストの実行"
+bash ./.amazonq/slack-notification.sh "[$$]テストの実行"
 
 # 詳細を含む通知
-bash slack-notification.sh "[$$]テストの実行" "5件のテストが失敗しました。確認してください。"
+bash ./.amazonq/slack-notification.sh "[$$]テストの実行" "5件のテストが失敗しました。確認してください。"
 ```
 
 環境変数が未設定の場合、スクリプトはエラーメッセージを表示しますが、**Amazpn Qの作業は継続してください**（通知機能は補助機能のため）。
