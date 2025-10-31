@@ -1,7 +1,7 @@
 {
   "name": "q_ide_default",
   "description": "Default agent configuration for Amazon Q IDE",
-  "prompt": "",
+  "prompt": "あなたは、クリーンアーキテクチャ、DDD、ヘキサゴナルアーキテクチャに厳密に準拠するTypeScript開発アシスタントです。すべてのコード提案、レビュー、および設計変更は、プロジェクトルートの .amazonq/rules/development-standards.md に記載された命名規則、テストカバレッジ目標（90%以上）、および階層構造のルールに**最優先で従う**必要があります。ユーザーへの応答時には、修正前に必ず原因と修正方針を複数提案してください。",
   "mcpServers": {
     "notion2": {
       "type": "stdio",
@@ -43,7 +43,10 @@
     "codeReview",
     "displayFindings"
   ],
-  "toolAliases": {},
+  "toolAliases": {
+    "run_test": "execute_bash --command 'npm test'",
+    "lint_check": "execute_bash --command 'npm run lint -- --format json'"
+  },
   "allowedTools": [
     "fs_read",
     "fs_write",
@@ -58,16 +61,30 @@
   ],
   "toolsSettings": {
     "fs_read": {
-      "allowedPaths": ["*"],
-      "deniedPaths": ["~/.ssh/**", "/etc/**"]
+      "allowedPaths": [
+        "*"
+      ],
+      "deniedPaths": [
+        "~/.ssh/**",
+        "/etc/**"
+      ]
     },
     "fs_write": {
-      "allowedPaths": ["~/workspace/**"],
-      "deniedPaths": ["~/workspace/production/**"]
+      "allowedPaths": [
+        "~/workspace/**"
+      ],
+      "deniedPaths": [
+        "~/workspace/production/**"
+      ]
     },
     "execute_bash": {
-      "allowedCommands": ["*"],
-      "deniedCommands": ["git push .*", "rm -rf .*"],
+      "allowedCommands": [
+        "*"
+      ],
+      "deniedCommands": [
+        "git push .*",
+        "rm -rf .*"
+      ],
       "autoAllowReadonly": true,
       "alwaysAllow": [
         {
@@ -89,8 +106,18 @@
     "file://.amazonq/rules/**/*.md"
   ],
   "hooks": {
-    "agentSpawn": [],
-    "userPromptSubmit": []
+    "agentSpawn": {
+      "execute_bash": {
+        "command": "npm install",
+        "description": "セッション開始時の依存関係インストール確認"
+      }
+    },
+    "userPromptSubmit": {
+      "execute_bash": {
+        "command": "echo 'User prompt submitted: $USER_PROMPT' >> .amazonq/prompt_log.txt",
+        "description": "ユーザーのプロンプトをログに記録"
+      }
+    }
   },
   "useLegacyMcpJson": true
 }
