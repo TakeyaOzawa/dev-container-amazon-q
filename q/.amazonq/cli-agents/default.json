@@ -1,0 +1,135 @@
+{
+  "name": "q_cli_default",
+  "description": "日本語対応のデフォルトエージェント設定 - クリーンアーキテクチャ準拠TypeScript開発アシスタント",
+  "instructions": [
+    "🇯🇵 **重要**: すべてのやりとりは日本語で行ってください。",
+    "あなたは、クリーンアーキテクチャ、DDD、ヘキサゴナルアーキテクチャに厳密に準拠するTypeScript開発アシスタントです。",
+    "すべてのコード提案、レビュー、および設計変更は、プロジェクトルートの .amazonq/rules/development-standards.md に記載された命名規則、テストカバレッジ目標（90%以上）、および階層構造のルールに**最優先で従う**必要があります。",
+    "ユーザーへの応答時には、修正前に必ず原因と修正方針を複数提案してください。",
+    "🔄 **定期的な再読み込み**: セッション中は定期的に .amazonq/cli-agents/ 内の設定ファイルを再読み込みし、最新の設定を反映してください。",
+    "📋 **エラーコード管理**: 新しいエラーを追加する際は、StandardErrorクラスのコメントに記載された手順に従ってください。"
+  ],
+  "tools": [
+    "fs_read",
+    "execute_bash", 
+    "fs_write",
+    "report_issue",
+    "use_aws"
+  ],
+  "allowedTools": [
+    "fs_read",
+    "fs_write", 
+    "execute_bash",
+    "report_issue",
+    "use_aws"
+  ],
+  "toolsSettings": {
+    "fs_read": {
+      "allowedPaths": [
+        "~/workspace/**",
+        ".amazonq/**",
+        "src/**",
+        "docs/**",
+        "scripts/**",
+        "public/**",
+        "*.md",
+        "*.json",
+        "*.ts",
+        "*.js"
+      ],
+      "deniedPaths": [
+        "~/.ssh/**",
+        "/etc/**",
+        "node_modules/**",
+        "dist/**",
+        "coverage/**"
+      ]
+    },
+    "fs_write": {
+      "allowedPaths": [
+        "~/workspace/**"
+      ],
+      "deniedPaths": [
+        "~/workspace/production/**",
+        "~/workspace/node_modules/**",
+        "~/workspace/dist/**"
+      ]
+    },
+    "execute_bash": {
+      "allowedCommands": [
+        "npm .*",
+        "git status",
+        "git diff .*",
+        "git log .*",
+        "ls .*",
+        "find .*",
+        "grep .*",
+        "cat .*",
+        "head .*",
+        "tail .*",
+        "wc .*",
+        "chmod \\+x .*"
+      ],
+      "deniedCommands": [
+        "git push .*",
+        "rm -rf .*",
+        "sudo .*",
+        "curl .*",
+        "wget .*"
+      ],
+      "autoAllowReadonly": true
+    },
+    "use_aws": {
+      "allowedServices": [
+        "s3",
+        "lambda",
+        "ec2",
+        "cloudformation"
+      ],
+      "autoAllowReadonly": true
+    }
+  },
+  "resources": [
+    "file://README.md",
+    "file://.amazonq/rules/**/*.md",
+    "file://src/domain/entities/StandardError.ts",
+    "file://package.json",
+    "file://docs/**/*.md"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo '🇯🇵 日本語対応エージェントが起動しました'",
+        "description": "エージェント起動通知（日本語）"
+      },
+      {
+        "command": "ls -la .amazonq/cli-agents/",
+        "description": "cli-agentsディレクトリの内容確認"
+      }
+    ],
+    "userPromptSubmit": [
+      {
+        "command": "echo '[$(date)] ユーザープロンプト受信' >> .amazonq/session.log",
+        "description": "プロンプト受信ログ（日本語）"
+      }
+    ],
+    "stop": [
+      {
+        "command": "echo '💾 .amazonq/cli-agents/ の設定を再確認中...'",
+        "description": "応答完了後のcli-agents設定再確認"
+      }
+    ]
+  },
+  "mcpServers": {
+    "notion": {
+      "type": "stdio", 
+      "command": "notion-mcp-server",
+      "args": [],
+      "env": {
+        "NOTION_TOKEN": "${AMAZON_Q_NOTION_TOKEN}"
+      },
+      "autoAllowReadonly": false,
+      "autoAllowWrite": true
+    }
+  }
+}

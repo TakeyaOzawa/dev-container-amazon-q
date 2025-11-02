@@ -4,6 +4,21 @@ Amazon Q Developerは、**クリーンアーキテクチャ**、**ドメイン�
 
 ---
 
+## 🇯🇵 日本語対応
+
+### 基本方針
+- **すべてのやりとりを日本語で行う**: ユーザーとのコミュニケーション、コメント、ログメッセージは日本語で記述すること
+- **説明文、ログメッセージも日本語化**: エラーメッセージ、デバッグ出力、コミットメッセージなども日本語で記述
+- **コード内コメント**: TypeScriptコード内のコメントは日本語で記述し、技術的な説明も日本語で行う
+- **ドキュメント**: README、設計書、仕様書などのドキュメントは日本語で作成・更新
+
+### 例外事項
+- **変数名・関数名**: 英語のcamelCase/PascalCaseを使用（国際的な慣例に従う）
+- **ライブラリ・フレームワーク**: 既存の英語ライブラリの命名規則はそのまま使用
+- **Git操作**: ブランチ名、タグ名は英語でも可（チーム方針に従う）
+
+---
+
 ## 🏛️ アーキテクチャと階層構造のルール
 
 ### 1. 命名規則の遵守
@@ -12,6 +27,7 @@ Amazon Q Developerは、**クリーンアーキテクチャ**、**ドメイン�
 | 項目 | 命名規則 | 例 |
 | :--- | :--- | :--- |
 | **ファイル名 (全般)** | **PascalCase** | `User.ts`, `CreateUserUsecase.ts`, `Background.ts` |
+| **ファイル名 (ドキュメント)** | **UPPER_SNAKE** | `USER_MANAGEMENT.md`, `README.md` |
 | **ディレクトリ名** | **kebab-case** | `value-objects`, `worker-scripts`, `external-service` |
 | **インターフェース名** | PascalCase（`I`を付けない）| `UserRepository`, `Logger` |
 
@@ -20,10 +36,31 @@ Amazon Q Developerは、**クリーンアーキテクチャ**、**ドメイン�
 依存関係は必ず**内側**（`domain`層）に向かって流れること。
 
 project-root/ 
+│
+├── docs/
+│ ├── external-guides/
+│ │ ├── errors/
+│ │ │ ├── README.md
+│ │ │ └── ERROR_CODE.md 
+│ │ └── USER_MANAGEMENT.md 
+│ ├── internal-guides/
+│ │ └── USER_MANAGEMENT.md
+│ └── tasks/
+│   ├── old/ 
+│   │ └── 20251105_FIRST_PAGE.md 
+│   └── USER_MANAGEMENT.md 
+│
+├── tools/ // AIおよび開発者が開発やデバッグで利用するsh等のスクリプト 
+│
+├── dist/ // コンパイル後のファイル
+│
 ├── src/ 
 │ ├── domain/ (💎 コアビジネスルール層 - 依存性なし) 
+│ │ ├── constants/
+│ │ │ └── UserType.ts 
 │ │ ├── entities/ 
 │ │ │ ├── User.ts // class User 
+│ │ │ │ └── User.test.ts // class User 
 │ │ │ └── __tests__ 
 │ │ │   └── User.test.ts // class User 
 │ │ ├── value-objects/ // ディレクトリ名はkebab-case 
@@ -86,19 +123,28 @@ project-root/
 │ │ └── content-script/ // DOM操作のエントリーポイント 
 │ │   └── ContentScript.ts //リスナー登録。DOMイベントからのメッセージ発火など
 │ │ 
-│ ├── i18n/ (🌐 多言語対応) 
+│ ├── public/ 
+│ │ ├── components/ // HTML
+│ │ ├── styles/ // CSS 
+│ │ │ └── Tab.ts // chrome.tabs.create({ url: ... }) などの直接的なAPI呼び出しロジック
 │ │ └── locales/ // 翻訳ファイル (例: en.json, ja.json)
 │ │ 
-│ └── types/ (📚 共通型定義) 
+│ └── @types/ (📚 共通型定義) 
 │   ├── common/ 
 │   ├── browser-messaging/ 
 │   │ ├── AppMessage.ts // メッセージの基本構造（type, payload）
 │   │ └── UserMessagePayload.ts // 特定のメッセージのペイロード構造
 │   └── utility/ 
+│
+├── __mocks__/ (🧪 結合テスト以降) 
 │ 
-└── tests/ (🧪 結合テスト以降) 
-  ├── integration/
-  └── e2e/
+├── __tests__/ (🧪 結合テスト以降) 
+│ ├── integration/
+│ └── e2e/
+│
+└── __test_results__/ 
+  ├── coverage/
+  └── playwright/
 
 ### 3. DTO (Data Transfer Object) 実装の原則
 
@@ -191,6 +237,11 @@ Chrome拡張機能のメッセージングは、インフラストラクチャ�
 ## 🔔 ユーザー通知ルール
 
 **IMPORTANT**: Amazon Qがユーザーに選択や指示を求める前に、必ずSlack通知を送信してください。
+
+### プロセスID管理
+- **親ターミナルのプロセスID使用**: `[$$]`プレフィックスは`$PPID`（親プロセスID）を使用し、同一ターミナルからの通知は常に同じIDを表示すること
+- **一貫性の確保**: 同一ターミナルセッションでの作業進行は同じプロセスIDで追跡可能にすること
+- **識別性の向上**: 複数ターミナルでの並行作業時に、どのターミナルからの通知かを明確に判別できるようにすること
 
 ### 通知を送るべき状況
 
