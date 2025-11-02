@@ -6,9 +6,11 @@ services:
     volumes:
       - ${AMAZON_Q_WORKSPACE:-${AMAZON_Q_DEFAULT_WORKSPACE:-$HOME}}:/home/developer/workspace:cached
       - ~/.aws/nskp_config/netskope-cert-bundle.pem:/home/developer/.aws/nskp_config/netskope-cert-bundle.pem:cached
-      - ./.amazonq/agents/default.json:/home/developer/workspace/.amazonq/agents/default.json:cached
+      - ./.amazonq/cli-agents/default.json:/home/developer/workspace/.amazonq/cli-agents/default.json:cached
+      - ./.amazonq/cli-agents/commit-reviewer.json:/home/developer/workspace/.amazonq/cli-agents/commit-reviewer.json:cached
       - ./.amazonq/rules/development-standards.md:/home/developer/workspace/.amazonq/rules/development-standards.md:cached
       - ./.amazonq/slack-notification.sh:/home/developer/workspace/.amazonq/slack-notification.sh:cached
+      - ./.amazonq/q-commit-review.sh:/home/developer/workspace/.amazonq/q-commit-review.sh:cached
       - ./.vscode:/vscode:cached
     env_file:
       - ./.env
